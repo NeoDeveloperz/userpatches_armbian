@@ -230,7 +230,31 @@ git_repos() {
 }
 
 
+create_usr_and_grps() {
+	echo "${RED}INFO: ${CYAN} Creating default USER: ${GREEN}bananapi !"
+	useradd -m bananapi
+	echo "${BLUE}ADDING USER TO GPIO-GORUPS: I2C, SPI & GPIO!"
 
+	groupadd -f -r gpio
+
+	cd /usr/share/libarys/RPi.GPIO
+	python3 create_gpio_user_permissions.py
+
+	gpasswd -a bananapi sudo
+	gpasswd -a bananapi i2c
+	gpasswd -a bananapi spi
+	gpasswd -a bananapi gpio
+
+}
+
+enable_gpio_interfaces() {
+	echo "${RED}INFO: ${CYAN} ENABLING ALL HARDWARE INTERFACES!"
+	if [[ "$hwboard" == "bananapim2berry" || "$hwboard" == "bananapim2ultra" ]]; then
+		echo -e "fdt_overlays=sun8i-r40-i2c2 sun8i-r40-i2c3 sun8i-r40-spi-spidev0 sun8i-r40-spi-spidev1 sun8i-r40-uart2" >> /boot/armbianEnv.txt
+	else
+		echo "${RED}ERROR: CANT ENABLE HARDWARE INTERFACES RIGHT NOW, DEVICETREEOVERLAYS FOR THIS BOARD ARE CURRENTLY NOT SUPPORTED!"
+	fi
+}
 
 board_determiner() {
 	echo "${RED}INFO: ${CYAN} COPYING BOARD-DETERMINIER FILES!"
@@ -289,6 +313,9 @@ build() {
     git_repos;
 	grant_permissions;
 
+	enable_gpio_interfaces
+	create_usr_and_grps
+
 }
 
 build_xenial() {
@@ -301,6 +328,8 @@ build_xenial() {
     git_repos;
 	grant_permissions;
 
+	enable_gpio_interfaces
+	create_usr_and_grps
 }
 
 build_bionic() {
@@ -311,6 +340,9 @@ build_bionic() {
     board_determiner;
     git_repos;
 	grant_permissions;
+
+	enable_gpio_interfaces
+	create_usr_and_grps
 }
 
 build_focal() {
@@ -321,6 +353,9 @@ build_focal() {
     board_determiner;
     git_repos;
 	grant_permissions;
+
+	enable_gpio_interfaces
+	create_usr_and_grps
 }
 
 build_jammy() {
@@ -331,6 +366,9 @@ build_jammy() {
     board_determiner;
     git_repos;
 	grant_permissions;
+
+	enable_gpio_interfaces
+	create_usr_and_grps
 }
 
 build_noble() {
@@ -341,6 +379,9 @@ build_noble() {
     board_determiner;
     git_repos;
 	grant_permissions;
+
+	enable_gpio_interfaces
+	create_usr_and_grps
 }
 
 build_stretch() {
@@ -351,6 +392,9 @@ build_stretch() {
     board_determiner;
     git_repos;
 	grant_permissions;
+
+	enable_gpio_interfaces
+	create_usr_and_grps
 }
 
 build_buster() {
@@ -361,6 +405,9 @@ build_buster() {
     board_determiner;
     git_repos;
 	grant_permissions;
+
+	enable_gpio_interfaces
+	create_usr_and_grps
 }
 
 build_bullseye() {
@@ -379,6 +426,9 @@ build_bullseye() {
     git_repos;
 	grant_permissions;
 
+	enable_gpio_interfaces
+	create_usr_and_grps
+
 }
 
 build_bookworm() {
@@ -389,6 +439,9 @@ build_bookworm() {
     board_determiner;
     git_repos;
 	grant_permissions;
+
+	enable_gpio_interfaces
+	create_usr_and_grps
 }
 
 build_trixie() {
@@ -400,6 +453,9 @@ build_trixie() {
     git_repos;
 	grant_permissions;
 
+	enable_gpio_interfaces
+	create_usr_and_grps
+
 }
 
 build_sid() {
@@ -410,6 +466,9 @@ build_sid() {
     board_determiner;
     git_repos;
 	grant_permissions;
+
+	enable_gpio_interfaces
+	create_usr_and_grps
 
 }
 
