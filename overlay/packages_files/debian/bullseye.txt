@@ -15,10 +15,7 @@ python3-dev
 python3-pip
 python3-venv
 python3-smbus
-<<<<<<< HEAD
-=======
 python3-pillow
->>>>>>> f9cdc08 (Added Board-Determinier for all Banana Pi Boards !)
 python3-certbot-nginx
 golang
 ruby-dev
@@ -53,8 +50,5 @@ openssh-server
 ffmpeg
 vlc
 hdparm
-<<<<<<< HEAD
-=======
 i2c-tools
 spi-tools
->>>>>>> f9cdc08 (Added Board-Determinier for all Banana Pi Boards !)
