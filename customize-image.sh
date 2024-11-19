@@ -43,15 +43,15 @@ hwboard=$BOARD
 
 
 # Pfade, desen rechte gesetzt werden müssen
-paths=("/etc/init.d/set_led_trigger.sh" "/var/lib/bananapi" "/usr/share/libarys")
+paths=("/etc/init.d/onboard-led_trigger_service.sh" "/var/lib/bananapi" "/usr/share/libarys")
 
 # Verzeichnisse die erstellt werden müssen
 dirs=("/var/lib" "/usr/local/bin" "/usr/share/libarys")
 
 
 # Definiere onBOARD LED init.d-Service Trigger Scripts
-TMP_LED_TRIGGER="/tmp/overlay/scripts/bpi-m2u-m2b/set_led_trigger.sh" # File in OVERLAY (NEEDS COPY TO)
-LED_TRIGGER_SERVICE="/etc/init.d/set_led_trigger.sh" # File in CHROOT-TARGET
+TMP_LED_TRIGGER="/tmp/overlay/scripts/bpi-m2u-m2b/onboard-led_trigger_service.sh" # File in OVERLAY (NEEDS COPY TO)
+LED_TRIGGER_SERVICE="/etc/init.d/onboard-led_trigger_service.sh" # File in CHROOT-TARGET
 
 # Github Repository List
 git_repos="/tmp/overlay/git_repos/repos.txt"
@@ -270,30 +270,44 @@ board_determiner() {
 
 
 
+bpi_m2b_m2u_trigger() {
+	echo "${GREEN}INFO: ${CYAN}Copying LED-Trigger from overlay to /etc/init.d !"
+	cp -r "$TMP_LED_TRIGGER" "$LED_TRIGGER_SERVICE"
+	grant_permissions;
+	echo "${GREEN}INFO: ${CYAN}Enabling onBoard-LED Trigger as a init.d Service!"
+	manage_service "set_led_trigger.sh" "defaults"
+}
+
+
 
 led_trigger() {
 	echo "${GREEN}INFO: Settingup onBOARD LED Trigger to: ${RED}RED: ${BLUE}CPU0 ${GREEN}GREEN: ${CYAN}heartbeat!"
 
 	case $hwboard in 
 		bananapim2ultra)
-			echo "${GREEN}INFO: ${CYAN}Copying LED-Trigger from overlay to /etc/init.d !"
-			cp -r "$TMP_LED_TRIGGER" "$LED_TRIGGER_SERVICE"
-			grant_permissions;
-			echo "Enable init.d Service!"
-			sleep 1
-			manage_service "set_led_trigger.sh" "defaults"
+			bpi_m2b_m2u_trigger
 			;;
 		bananapim2berry)
-			echo "${GREEN}INFO: ${CYAN}Copying LED-Trigger from overlay to /etc/init.d !"
-			cp -r "$TMP_LED_TRIGGER" "$LED_TRIGGER_SERVICE"
-			grant_permissions;
-			echo "Enable init.d Service!"
-			sleep 1
-			manage_service "set_led_trigger.sh" "defaults"
+			bpi_m2b_m2u_trigger
 			;;
         *)
-            echo "INVALID"
-            ;;
+            echo "${RED}ERROR: ${CYAN} Detected Board isnt supported currently using this GPIO-PinSet to Trigger the onBoard-LED's!!"
+			echo "${GREEN}INFO: ${CYAN} But if you want to, we can try using the GPIO-PinSet, which is available to trigger the onBoard-LED!"
+			read -p "${GREEN}DO YOU WANT TO TRY ENABLING THIS EXPERIMENTAL ONBOARD-LED TRIGGER SERVICE?(Yy/Nn) > " choice_trigger_led_service
+			case $choice_trigger_led_service in
+				y|Y)
+				    bpi_m2b_m2u_trigger
+					;;
+				n|N)
+                    echo "${GREEN}INFO: ${CYAN} SKIPPING ONBOARD-LED TRIGGER SERVICE!"
+                    ;;
+                *)
+				    echo "${RED}ERROR: ${CYAN} Invalid input! Please enter 'y|Y' or 'n|N'!"
+                    led_trigger
+					;;
+			esac
+					
+        	;;
     esac
 }
 
